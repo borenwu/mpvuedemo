@@ -1,15 +1,28 @@
 //工具函数库
 import config from './config'
 
-export function get (url) {
-    return new Promise((resolve,reject)=>{
+// http get
+export function get(url) {
+    return request(url, 'GET')
+}
+
+export function post(url, data) {
+    return request(url, 'POST', data)
+}
+
+// http post
+function request(url, method, data) {
+    return new Promise((resolve, reject) => {
         wx.request({
-            url:config.host+url,
-            success:function (res) {
-                if(res.data.code==0){
-                    resolve(res)
+            data,
+            method: method,
+            url: config.host + url,
+            success: function (res) {
+                if (res.data.code == 0) {
+                    resolve(res.data.data)
                 }
-                else{
+                else {
+                    showModal('失败',res.data.data.msg)
                     reject(res)
                 }
             }
@@ -17,7 +30,7 @@ export function get (url) {
     })
 }
 
-export function showSuccess (text) {
+export function showSuccess(text) {
     wx.showToast({
         title: text,
         icon: 'success'
@@ -25,7 +38,7 @@ export function showSuccess (text) {
 }
 
 // 显示繁忙提示
-export function showBusy (text ){
+export function showBusy(text) {
     console.log('show busy')
     wx.showToast({
         title: text,
@@ -35,13 +48,11 @@ export function showBusy (text ){
 }
 
 
-// 显示失败提示
-export function showModel (title, content){
-    wx.hideToast();
-    
-    wx.showModal({
-        title,
-        content: JSON.stringify(content),
-        showCancel: false
-    })
+// 显示modal提示
+export function showModal(title, content){
+  wx.showModal({
+    title,
+    content,
+    showCancel:false
+  })
 }
